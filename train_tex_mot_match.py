@@ -7,6 +7,7 @@ from options.train_options import TrainTexMotMatchOptions
 from networks.modules import *
 from networks.trainers import TextMotionMatchTrainer
 from data.dataset import Text2MotionDatasetV2, collate_fn
+from data.dataset import Text2MotionDatasetV3
 from scripts.motion_process import *
 from torch.utils.data import DataLoader
 from utils.word_vectorizer import WordVectorizer, POS_enumerator
@@ -23,7 +24,7 @@ def build_models(opt):
                                       hidden_size=opt.dim_motion_hidden,
                                       output_size=opt.dim_coemb_hidden,
                                       device=opt.device)
-    if not opt.is_continue:
+    if opt.is_continue:
        checkpoint = torch.load(pjoin(opt.checkpoints_dir, opt.dataset_name, opt.decomp_name, 'model', 'latest.tar'),
                                map_location=opt.device)
        movement_enc.load_state_dict(checkpoint['movement_enc'])
@@ -58,6 +59,15 @@ if __name__ == '__main__':
         dim_pose = 263
         num_classes = 200 // opt.unit_length
         meta_root = pjoin(opt.checkpoints_dir, opt.dataset_name, 'Comp_v6_KLD01', 'meta')
+    elif opt.dataset_name == 'kungfu':
+        opt.data_root = './inputs/motionx'
+        opt.motion_dir = pjoin(opt.data_root, 'motion_data/smplx_322/kungfu')
+        opt.text_dir = pjoin(opt.data_root, 'motionx_seq_text_v1.1/kungfu')
+        opt.joints_num = 22
+        opt.max_motion_length = 196
+        dim_pose = 263
+        num_classes = 200 // opt.unit_length
+        meta_root = pjoin("./inputs/checkpoints/t2m", 'Comp_v6_KLD01', 'meta')
     elif opt.dataset_name == 'kit':
         opt.data_root = './dataset/KIT-ML'
         opt.motion_dir = pjoin(opt.data_root, 'new_joint_vecs')
@@ -95,10 +105,10 @@ if __name__ == '__main__':
 
     trainer = TextMotionMatchTrainer(opt, text_encoder, motion_encoder, movement_encoder)
 
-    train_dataset = Text2MotionDatasetV2(opt, mean, std, train_split_file, w_vectorizer)
-    val_dataset = Text2MotionDatasetV2(opt, mean, std, val_split_file, w_vectorizer)
+    train_dataset = Text2MotionDatasetV3(opt, mean, std, train_split_file, w_vectorizer)
+    val_dataset = Text2MotionDatasetV3(opt, mean, std, val_split_file, w_vectorizer)
 
-    train_loader = DataLoader(train_dataset, batch_size=opt.batch_size, drop_last=True, num_workers=4,
+    train_loader = DataLoader(train_dataset, batch_size=opt.batch_size, drop_last=True, num_workers=0,
                               shuffle=True, collate_fn=collate_fn, pin_memory=True)
     val_loader = DataLoader(val_dataset, batch_size=opt.batch_size, drop_last=True, num_workers=4,
                             shuffle=True, collate_fn=collate_fn, pin_memory=True)

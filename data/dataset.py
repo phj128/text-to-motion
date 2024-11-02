@@ -9,6 +9,9 @@ from tqdm import tqdm
 import spacy
 
 from torch.utils.data._utils.collate import default_collate
+from data.utils import smpl_fk, resample_motion_fps
+from data.hml3d.utils import convert_motion_to_hmlvec263_original
+from data.smplx_utils import make_smplx
 
 # import spacy
 
@@ -329,6 +332,161 @@ class Text2MotionDatasetV2(data.Dataset):
         elif coin2 == 'single':
             m_length = (m_length // self.opt.unit_length) * self.opt.unit_length
         idx = random.randint(0, len(motion) - m_length)
+        motion = motion[idx:idx+m_length]
+
+        "Z Normalization"
+        motion = (motion - self.mean) / self.std
+
+        if m_length < self.max_motion_length:
+            motion = np.concatenate([motion,
+                                     np.zeros((self.max_motion_length - m_length, motion.shape[1]))
+                                     ], axis=0)
+        # print(word_embeddings.shape, motion.shape)
+        # print(tokens)
+        return word_embeddings, pos_one_hots, caption, sent_len, motion, m_length, '_'.join(tokens)
+
+
+
+def load_motion_and_text(base_motion_path, base_text_path):
+    data = {}
+    
+    # 遍历motion数据的子集文件夹
+    for subset in os.listdir(base_motion_path):
+        motion_subset_path = os.path.join(base_motion_path, subset)
+        text_subset_path = os.path.join(base_text_path, subset)
+
+        if os.path.isdir(motion_subset_path) and os.path.isdir(text_subset_path):
+            # 遍历每个subset中的.npy文件
+            for file in os.listdir(motion_subset_path):
+                if file.endswith('.npy'):
+                    motion_file_path = os.path.join(motion_subset_path, file)
+                    text_file_path = os.path.join(text_subset_path, file.replace('.npy', '.txt'))
+
+                    # 读取motion和text
+                    if os.path.exists(text_file_path):
+                        motion = np.load(motion_file_path)
+                        with open(text_file_path, 'r') as f:
+                            text = f.read().strip()
+                        
+                        # 存储在字典中
+                        data[subset+ "/" + file[:-4]] = {"motion": motion, "text": text}
+
+    return data
+
+
+# MotionX training
+class Text2MotionDatasetV3(data.Dataset):
+    def __init__(self, opt, mean, std, split_file, w_vectorizer):
+        self.opt = opt
+        self.w_vectorizer = w_vectorizer
+        self.max_length = 20
+        self.pointer = 0
+        self.max_motion_length = opt.max_motion_length
+        min_motion_len = 40 
+
+        self.token_model = spacy.load("en_core_web_sm")
+
+        data_dict = load_motion_and_text(opt.motion_dir, opt.text_dir)
+        data_dict, length_list, name_list = self.prepare_meta(data_dict)
+
+        body_models = {
+            "male": make_smplx("rich-smplx", gender="male"),
+            "neutral": make_smplx("rich-smplx", gender="neutral"),
+            "female": make_smplx("rich-smplx", gender="female"),
+        }
+        self.smpl = body_models
+
+        self.mean = mean
+        self.std = std
+        self.length_arr = np.array(length_list)
+        self.data_dict = data_dict
+        self.name_list = name_list
+
+    def prepare_meta(self, data_dict):
+        new_data_dict = {}
+        length_list = []
+        name_list = []
+        for k in data_dict.keys():
+            motion = data_dict[k]["motion"]
+            text = data_dict[k]["text"]
+            L = motion.shape[0]
+            if L < 2 * 30:
+                continue
+            if L > 10 * 30:
+                continue
+            new_data_dict[k] = {"motion": motion, "text": text, "length": L}
+            length_list.append(L)
+            name_list.append(k)
+        
+        return new_data_dict, length_list, name_list
+
+    def inv_transform(self, data):
+        return data * self.std + self.mean
+
+    def __len__(self):
+        return len(self.data_dict)
+
+    def __getitem__(self, item):
+        idx = item
+        data = self.data_dict[self.name_list[idx]]
+        motion, m_length, text = data['motion'], data['length'], data['text']
+        m_length = m_length // 3 * 2
+        m_length = min(m_length, self.max_motion_length)
+
+        motion = torch.tensor(motion, dtype=torch.float32)
+        smpl_params = {"global_orient": motion[:, :3],
+                  "body_pose": motion[:, 3:66],
+                  "transl": motion[:, 309:312],
+                  "betas": None,
+                  }
+
+        joints = smpl_fk(self.smpl["neutral"], **smpl_params)  # (F, 22, 3)
+
+        joints = resample_motion_fps(joints, m_length + 1) # original convert will remove 1 frame
+        joints = joints.numpy()
+
+        motion, _, _, _ = convert_motion_to_hmlvec263_original(joints)
+
+        # Randomly select a caption
+        caption = text
+        caption = caption.replace('/', ' ')
+        tokens = self.token_model(caption)
+        token_format = " ".join([f"{token.text}/{token.pos_}" for token in tokens])
+        tokens = token_format.split(" ")
+
+        if len(tokens) < self.opt.max_text_len:
+            # pad with "unk"
+            tokens = ['sos/OTHER'] + tokens + ['eos/OTHER']
+            sent_len = len(tokens)
+            tokens = tokens + ['unk/OTHER'] * (self.opt.max_text_len + 2 - sent_len)
+        else:
+            # crop
+            tokens = tokens[:self.opt.max_text_len]
+            tokens = ['sos/OTHER'] + tokens + ['eos/OTHER']
+            sent_len = len(tokens)
+        pos_one_hots = []
+        word_embeddings = []
+        for token in tokens:
+            word_emb, pos_oh = self.w_vectorizer[token]
+            pos_one_hots.append(pos_oh[None, :])
+            word_embeddings.append(word_emb[None, :])
+        pos_one_hots = np.concatenate(pos_one_hots, axis=0)
+        word_embeddings = np.concatenate(word_embeddings, axis=0)
+
+        # Crop the motions in to times of 4, and introduce small variations
+        if self.opt.unit_length < 10:
+            coin2 = np.random.choice(['single', 'single', 'double'])
+        else:
+            coin2 = 'single'
+
+        if coin2 == 'double':
+            m_length = (m_length // self.opt.unit_length - 1) * self.opt.unit_length
+        elif coin2 == 'single':
+            m_length = (m_length // self.opt.unit_length) * self.opt.unit_length
+        if len(motion) > m_length:
+            idx = random.randint(0, len(motion) - m_length)
+        else:
+            idx = 0
         motion = motion[idx:idx+m_length]
 
         "Z Normalization"

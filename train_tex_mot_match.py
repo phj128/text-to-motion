@@ -68,6 +68,15 @@ if __name__ == '__main__':
         dim_pose = 263
         num_classes = 200 // opt.unit_length
         meta_root = pjoin("./inputs/checkpoints/t2m", 'Comp_v6_KLD01', 'meta')
+    elif opt.dataset_name == 'mixed':
+        opt.data_root = './inputs/motionx'
+        opt.motion_dir = pjoin(opt.data_root, 'motion_data/smplx_322')
+        opt.text_dir = pjoin(opt.data_root, 'motionx_seq_text_v1.1')
+        opt.joints_num = 22
+        opt.max_motion_length = 196
+        dim_pose = 263
+        num_classes = 200 // opt.unit_length
+        meta_root = pjoin("./inputs/checkpoints/t2m", 'Comp_v6_KLD01', 'meta')
     elif opt.dataset_name == 'kit':
         opt.data_root = './dataset/KIT-ML'
         opt.motion_dir = pjoin(opt.data_root, 'new_joint_vecs')

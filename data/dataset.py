@@ -1,6 +1,7 @@
 import torch
 from torch.utils import data
 import numpy as np
+import json
 import os
 from os.path import join as pjoin
 import random
@@ -374,6 +375,22 @@ def load_motion_and_text(base_motion_path, base_text_path):
     return data
 
 
+def load_mixed(base_motion_path, base_text_path):
+    mixed_text_path = f"../Motion-2Dto3D/inputs/motionx/motionx_seq_text_v1.1/mixed_train_seq_names.json"
+    with open(mixed_text_path, "r") as file:
+        test_seq_names = json.load(file)
+    data = {}
+    for k in test_seq_names:
+        motion_path = os.path.join(base_motion_path, k + ".npy")
+        text_path = os.path.join(base_text_path, k + ".txt")
+        motion = np.load(motion_path)
+        with open(text_path, 'r') as f:
+            text = f.read().strip()
+        data[k] = {"motion": motion, "text": text}
+
+    return data
+
+
 # MotionX training
 class Text2MotionDatasetV3(data.Dataset):
     def __init__(self, opt, mean, std, split_file, w_vectorizer):
@@ -386,7 +403,10 @@ class Text2MotionDatasetV3(data.Dataset):
 
         self.token_model = spacy.load("en_core_web_sm")
 
-        data_dict = load_motion_and_text(opt.motion_dir, opt.text_dir)
+        if opt.dataset_name == "mixed":
+            data_dict = load_mixed(opt.motion_dir, opt.text_dir)
+        else:
+            data_dict = load_motion_and_text(opt.motion_dir, opt.text_dir)
         data_dict, length_list, name_list = self.prepare_meta(data_dict)
 
         body_models = {

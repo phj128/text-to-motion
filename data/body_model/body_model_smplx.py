@@ -16,6 +16,8 @@ kwargs_disable_member_var = {
 }
 
 
+
+
 class BodyModelSMPLX(nn.Module):
     """Support Batch inference"""
 
@@ -36,6 +38,17 @@ class BodyModelSMPLX(nn.Module):
         self.register_buffer("J_template", J_template, False)
         self.register_buffer("J_shapedirs", J_shapedirs, False)
 
+        # for smplx 
+        shapedirs = self.bm.shapedirs  # (V, 3, 10)
+        J_regressor = self.bm.J_regressor[:55, :]  # (22, V)
+        v_template = self.bm.v_template  # (V, 3)
+        J_template = J_regressor @ v_template  # (22, 3)
+        J_shapedirs = torch.einsum("jv, vcd -> jcd", J_regressor, shapedirs)  # (22, 3, 10)
+        self.register_buffer("smplx_J_template", J_template, False)
+        self.register_buffer("smplx_J_shapedirs", J_shapedirs, False)
+
+
+
     def forward(
         self,
         betas=None,
@@ -50,6 +63,7 @@ class BodyModelSMPLX(nn.Module):
         reye_pose=None,
         **kwargs
     ):
+
         device, dtype = self.bm.shapedirs.device, self.bm.shapedirs.dtype
 
         model_vars = [
@@ -119,3 +133,35 @@ class BodyModelSMPLX(nn.Module):
         """betas: (*, 10) -> skeleton_beta: (*, 22, 3)"""
         skeleton_beta = self.J_template + torch.einsum("...d, jcd -> ...jc", betas, self.J_shapedirs)  # (22, 3)
         return skeleton_beta
+    
+    def get_local_skeleton(self, betas):
+        """betas: (*, 10) -> skeleton_beta: (*, 22, 3)"""
+        skeleton = self.get_skeleton(betas)
+        skeleton_parent = skeleton[:, self.bm.parents[:22]]
+        skeleton_local = skeleton - skeleton_parent
+        skeleton_local[:, 0] = skeleton[:, 0]
+        return skeleton_local
+    
+    def get_skeleton_with_finger(self, betas):
+        """betas: (*, 16) -> skeleton_beta: (*, 52, 3)"""
+        skeleton = self.smplx_J_template + torch.einsum("...d, jcd -> ...jc", betas, self.smplx_J_shapedirs)  # (52, 3)
+        return skeleton
+    
+    def get_local_skeleton_with_finger(self, betas):
+        """betas: (*, 16) -> skeleton_beta: (*, 52, 3)"""
+        skeleton = self.get_skeleton_with_finger(betas)
+        skeleton_parent = skeleton[:, self.bm.parents[:55]]
+        skeleton_local = skeleton - skeleton_parent
+        skeleton_local[:, 0] = skeleton[:, 0]
+        skeleton_local = torch.cat([skeleton_local[:, :22], skeleton_local[:, 25:55]], dim=1)
+        return skeleton_local
+
+    def forward_bfc(self, **kwargs):
+        """Wrap (B, F, C) to (B*F, C) and unwrap (B*F, C) to (B, F, C)"""
+        for k in kwargs:
+            assert len(kwargs[k].shape) == 3
+        B, F = kwargs["body_pose"].shape[:2]
+        smplx_out = self.forward(**{k: v.reshape(B * F, -1) for k, v in kwargs.items()})
+        smplx_out.vertices = smplx_out.vertices.reshape(B, F, -1, 3)
+        smplx_out.joints = smplx_out.joints.reshape(B, F, -1, 3)
+        return smplx_out

@@ -7,7 +7,7 @@ from options.train_options import TrainTexMotMatchOptions
 from networks.modules import *
 from networks.trainers import TextMotionMatchTrainer
 from data.dataset import Text2MotionDatasetV2, collate_fn
-from data.dataset import Text2MotionDatasetV3
+from data.dataset import Text2MotionDatasetV3, Text2MotionDatasetV4
 from scripts.motion_process import *
 from torch.utils.data import DataLoader
 from utils.word_vectorizer import WordVectorizer, POS_enumerator
@@ -86,6 +86,14 @@ if __name__ == '__main__':
         dim_pose = 263
         num_classes = 200 // opt.unit_length
         meta_root = pjoin("./inputs/checkpoints/t2m", 'Comp_v6_KLD01', 'meta')
+    elif opt.dataset_name == "arctic":
+        opt.data_root = './inputs/arctic_neutral'
+        opt.motion_dir = pjoin(opt.data_root)
+        opt.text_dir = pjoin(opt.data_root)
+        opt.joints_num = 52
+        opt.max_motion_length = 300
+        dim_pose = 52*3 * 2
+        num_classes = 200 // opt.unit_length # useless
     elif opt.dataset_name == 'kit':
         opt.data_root = './dataset/KIT-ML'
         opt.motion_dir = pjoin(opt.data_root, 'new_joint_vecs')
@@ -103,12 +111,16 @@ if __name__ == '__main__':
     dim_word = 300
     dim_pos_ohot = len(POS_enumerator)
 
-    mean = np.load(pjoin(meta_root, 'mean.npy'))
-    std = np.load(pjoin(meta_root, 'std.npy'))
+    # mean = np.load(pjoin(meta_root, 'mean.npy'))
+    # std = np.load(pjoin(meta_root, 'std.npy'))
+    mean = 0.0
+    std = 1.0
 
     w_vectorizer = WordVectorizer('./glove', 'our_vab')
-    train_split_file = pjoin("../Motion-2Dto3D/inputs/hml3d", 'train.txt')
-    val_split_file = pjoin("../Motion-2Dto3D/inputs/hml3d", 'val.txt')
+    # train_split_file = pjoin("../Motion-2Dto3D/inputs/hml3d", 'train.txt')
+    # val_split_file = pjoin("../Motion-2Dto3D/inputs/hml3d", 'val.txt')
+    train_split_file = "train"
+    val_split_file = "test"
 
     text_encoder, motion_encoder, movement_encoder = build_models(opt)
 
@@ -123,10 +135,21 @@ if __name__ == '__main__':
 
     trainer = TextMotionMatchTrainer(opt, text_encoder, motion_encoder, movement_encoder)
 
-    train_dataset = Text2MotionDatasetV3(opt, mean, std, train_split_file, w_vectorizer)
-    val_dataset = Text2MotionDatasetV3(opt, mean, std, val_split_file, w_vectorizer)
+    train_dataset = Text2MotionDatasetV4(opt, mean, std, train_split_file, w_vectorizer)
+    val_dataset = Text2MotionDatasetV4(opt, mean, std, val_split_file, w_vectorizer)
 
-    train_loader = DataLoader(train_dataset, batch_size=opt.batch_size, drop_last=True, num_workers=0,
+    # calcualte statistics #
+    # all_motion = []
+    # for data in train_dataset:
+    #     _, _, _, _, motion, length, _ = data
+    #     all_motion.append(motion[:length])
+    # all_motion = np.concatenate(all_motion, axis=0)
+    # mean = np.mean(all_motion, axis=0)
+    # std = np.std(all_motion, axis=0)
+    # std[std < 1e-4] = 1.0
+    #######################
+
+    train_loader = DataLoader(train_dataset, batch_size=opt.batch_size, drop_last=True, num_workers=4,
                               shuffle=True, collate_fn=collate_fn, pin_memory=True)
     val_loader = DataLoader(val_dataset, batch_size=opt.batch_size, drop_last=True, num_workers=4,
                             shuffle=True, collate_fn=collate_fn, pin_memory=True)

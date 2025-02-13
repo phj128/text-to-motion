@@ -10,6 +10,57 @@ import math
 
 
 ######## copy from pytorch3d#######
+def rotation_6d_to_matrix(d6: torch.Tensor) -> torch.Tensor:
+    """
+    Converts 6D rotation representation by Zhou et al. [1] to rotation matrix
+    using Gram--Schmidt orthogonalization per Section B of [1].
+    Args:
+        d6: 6D rotation representation, of size (*, 6)
+
+    Returns:
+        batch of rotation matrices of size (*, 3, 3)
+
+    [1] Zhou, Y., Barnes, C., Lu, J., Yang, J., & Li, H.
+    On the Continuity of Rotation Representations in Neural Networks.
+    IEEE Conference on Computer Vision and Pattern Recognition, 2019.
+    Retrieved from http://arxiv.org/abs/1812.07035
+    """
+
+    a1, a2 = d6[..., :3], d6[..., 3:]
+    b1 = F.normalize(a1, dim=-1)
+    b2 = a2 - (b1 * a2).sum(-1, keepdim=True) * b1
+    b2 = F.normalize(b2, dim=-1)
+    b3 = torch.cross(b1, b2, dim=-1)
+    return torch.stack((b1, b2, b3), dim=-2)
+
+
+def matrix_to_rotation_6d(matrix: torch.Tensor) -> torch.Tensor:
+    """
+    Converts rotation matrices to 6D rotation representation by Zhou et al. [1]
+    by dropping the last row. Note that 6D representation is not unique.
+    Args:
+        matrix: batch of rotation matrices of size (*, 3, 3)
+
+    Returns:
+        6D rotation representation, of size (*, 6)
+
+    [1] Zhou, Y., Barnes, C., Lu, J., Yang, J., & Li, H.
+    On the Continuity of Rotation Representations in Neural Networks.
+    IEEE Conference on Computer Vision and Pattern Recognition, 2019.
+    Retrieved from http://arxiv.org/abs/1812.07035
+    """
+    batch_dim = matrix.size()[:-2]
+    return matrix[..., :2, :].clone().reshape(batch_dim + (6,))
+
+
+def axis_angle_to_rotation_6d(axis_angle: torch.Tensor) -> torch.Tensor:
+    return matrix_to_rotation_6d(axis_angle_to_matrix(axis_angle))
+
+
+def rotation_6d_to_axis_angle(d6: torch.Tensor) -> torch.Tensor:
+    return matrix_to_axis_angle(rotation_6d_to_matrix(d6))
+
+
 def quaternion_to_matrix(quaternions: torch.Tensor) -> torch.Tensor:
     """
     Convert rotations given as quaternions to rotation matrices.
@@ -520,6 +571,39 @@ def mat2pose_batch(mat, returnvel=True):
     else:
         raise ValueError
     return vec
+
+
+def rotmat2xzdir(rotmat):
+    """_summary_
+
+    Args:
+        rotmat (tensor): [*, 3, 3]
+
+    Returns:
+        tensor: [*, 4]
+    """
+    x_dir = rotmat[..., [0, 2], 0]
+    z_dir = rotmat[..., [0, 2], 2]
+    return torch.cat((x_dir, z_dir), dim=-1)
+
+
+def xzdir2rotmat(xzdir):
+    """_summary_
+
+    Args:
+        xzdir (tensor): [*, 4]
+
+    Returns:
+        tensor: [*, 3, 3]
+    """
+    x_xzdir = xzdir[..., :2]
+    z_xzdir = xzdir[..., 2:4]
+    x_dir = torch.cat([x_xzdir[..., :1], torch.zeros_like(x_xzdir[..., :1]), x_xzdir[..., 1:]], dim=-1)
+    z_dir = torch.cat([z_xzdir[..., :1], torch.zeros_like(z_xzdir[..., :1]), z_xzdir[..., 1:]], dim=-1)
+    y_dir = torch.zeros_like(x_dir)
+    y_dir[..., 1] = 1.0
+    rotmat = torch.stack([x_dir, y_dir, z_dir], dim=-1)
+    return rotmat
 
 
 def get_mat_BinA(matCtoA, matCtoB):

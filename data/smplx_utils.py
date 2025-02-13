@@ -27,6 +27,16 @@ def make_smplx(type="neu_fullpose", **kwargs):
             "flat_hand_mean": False,
         }
         model = BodyModelSMPLX(model_path="inputs/checkpoints/body_models", **bm_kwargs)
+    elif type == "wholebody":
+        bm_kwargs = {
+            "model_type": "smplx",
+            "use_pca": False,
+            "gender": "neutral",
+            "flat_hand_mean": True,
+            "num_betas": 16,
+        }
+        bm_kwargs.update(kwargs)
+        model = BodyModelSMPLX(model_path="inputs/checkpoints/body_models", **bm_kwargs)
     elif type == "rich-smplx":
         # https://github.com/paulchhuang/rich_toolkit/blob/main/smplx2images.py
         bm_kwargs = {

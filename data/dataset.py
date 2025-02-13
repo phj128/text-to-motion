@@ -375,8 +375,7 @@ def load_motion_and_text(base_motion_path, base_text_path):
     return data
 
 
-def load_mixed(base_motion_path, base_text_path):
-    mixed_text_path = f"../Motion-2Dto3D/inputs/motionx/motionx_seq_text_v1.1/mixed_train_seq_names.json"
+def load_mixed(base_motion_path, base_text_path, mixed_text_path="../Motion-2Dto3D/inputs/motionx/motionx_seq_text_v1.1/mixed_train_seq_names.json"):
     with open(mixed_text_path, "r") as file:
         test_seq_names = json.load(file)
     data = {}
@@ -405,10 +404,72 @@ class Text2MotionDatasetV3(data.Dataset):
 
         if opt.dataset_name == "mixed":
             data_dict = load_mixed(opt.motion_dir, opt.text_dir)
+        elif opt.dataset_name == "idea400":
+            if "train" in split_file:
+                mixed_text_path = "../Motion-2Dto3D/inputs/motionx/motionx_seq_text_v1.1/idea400_train_seq_names.json"
+            else:
+                mixed_text_path = "../Motion-2Dto3D/inputs/motionx/motionx_seq_text_v1.1/idea400_test_seq_names.json"
+            data_dict = load_mixed(opt.motion_dir, opt.text_dir, mixed_text_path)
         else:
             data_dict = load_motion_and_text(opt.motion_dir, opt.text_dir)
-        data_dict, length_list, name_list = self.prepare_meta(data_dict)
 
+        data_dict, length_list, name_list = self.prepare_meta(data_dict)
+        
+        if False:
+            # add hml3d into training
+            if "val.txt" in split_file:
+                data_dict, length_list, name_list = {}, [], []
+            else:
+                data_dict, length_list, name_list = self.prepare_meta(data_dict)
+
+            hml3d_data_dict = {}
+            hml3d_data = torch.load("../Motion-2Dto3D/inputs/hml3d/joints3d.pth")
+        
+            txt_path = f"../Motion-2Dto3D/inputs/hml3d/texts"
+
+            max_motion_len = 200
+            min_motion_len = 40
+
+            with cs.open(split_file, "r") as f:
+                for line in f.readlines():
+                    seq_name = line.strip()
+                    if seq_name + ".npy" in hml3d_data.keys():
+                        motion = hml3d_data[seq_name + ".npy"]["joints3d"]
+                        motion_len = motion.shape[0]
+                        # Follow MDM, only uses [2s ~ 10s]
+                        if motion_len < min_motion_len or motion_len > max_motion_len:
+                            continue
+                        with cs.open(os.path.join(txt_path, seq_name + ".txt")) as text_f:
+                            for text_line in text_f.readlines():
+                                text_dict = {}
+                                line_split = text_line.strip().split("#")
+                                caption = line_split[0]
+                                tokens = line_split[1].split(" ")
+                                f_tag = float(line_split[2])
+                                to_tag = float(line_split[3])
+                                f_tag = 0.0 if np.isnan(f_tag) else f_tag
+                                to_tag = 0.0 if np.isnan(to_tag) else to_tag
+
+                                text_dict["caption"] = caption
+                                text_dict["tokens"] = tokens
+                                if f_tag == 0.0 and to_tag == 0.0:
+                                    if seq_name in hml3d_data_dict:
+                                        seq_name += "_1"
+                                    hml3d_data_dict[seq_name] = {"motion": motion, "text": caption, "length": motion.shape[0], "is_hml3d": True}
+                                    name_list.append(seq_name)
+                                else:
+                                    start_frame = int(f_tag * 20)
+                                    end_frame = int(to_tag * 20)
+                                    n_motion = motion[start_frame:end_frame]
+                                    if (len(n_motion)) < min_motion_len or (len(n_motion) > max_motion_len):
+                                        continue
+                                    if seq_name in hml3d_data_dict:
+                                        seq_name += "_1"
+                                    hml3d_data_dict[seq_name] = {"motion": n_motion, "text": caption, "length": n_motion.shape[0], "is_hml3d": True}
+                                    name_list.append(seq_name)
+
+            data_dict.update(hml3d_data_dict)
+                            
         body_models = {
             "male": make_smplx("rich-smplx", gender="male"),
             "neutral": make_smplx("rich-smplx", gender="neutral"),
@@ -418,7 +479,6 @@ class Text2MotionDatasetV3(data.Dataset):
 
         self.mean = mean
         self.std = std
-        self.length_arr = np.array(length_list)
         self.data_dict = data_dict
         self.name_list = name_list
 
@@ -434,7 +494,7 @@ class Text2MotionDatasetV3(data.Dataset):
                 continue
             if L > 10 * 30:
                 continue
-            new_data_dict[k] = {"motion": motion, "text": text, "length": L}
+            new_data_dict[k] = {"motion": motion, "text": text, "length": L, "is_hml3d": False}
             length_list.append(L)
             name_list.append(k)
         
@@ -450,20 +510,27 @@ class Text2MotionDatasetV3(data.Dataset):
         idx = item
         data = self.data_dict[self.name_list[idx]]
         motion, m_length, text = data['motion'], data['length'], data['text']
-        m_length = m_length // 3 * 2
-        m_length = min(m_length, self.max_motion_length)
+        is_hml3d = data['is_hml3d']
+        if is_hml3d:
+            joints = data["motion"]
+            m_length -= 1
+            if isinstance(joints, torch.Tensor):
+                joints = joints.numpy()
+        else:
+            m_length = m_length // 3 * 2
+            m_length = min(m_length, self.max_motion_length)
 
-        motion = torch.tensor(motion, dtype=torch.float32)
-        smpl_params = {"global_orient": motion[:, :3],
-                  "body_pose": motion[:, 3:66],
-                  "transl": motion[:, 309:312],
-                  "betas": None,
-                  }
+            motion = torch.tensor(motion, dtype=torch.float32)
+            smpl_params = {"global_orient": motion[:, :3],
+                      "body_pose": motion[:, 3:66],
+                      "transl": motion[:, 309:312],
+                      "betas": None,
+                      }
 
-        joints = smpl_fk(self.smpl["neutral"], **smpl_params)  # (F, 22, 3)
+            joints = smpl_fk(self.smpl["neutral"], **smpl_params)  # (F, 22, 3)
 
-        joints = resample_motion_fps(joints, m_length + 1) # original convert will remove 1 frame
-        joints = joints.numpy()
+            joints = resample_motion_fps(joints, m_length + 1) # original convert will remove 1 frame
+            joints = joints.numpy()
 
         motion, _, _, _ = convert_motion_to_hmlvec263_original(joints)
 
@@ -473,6 +540,15 @@ class Text2MotionDatasetV3(data.Dataset):
         tokens = self.token_model(caption)
         token_format = " ".join([f"{token.text}/{token.pos_}" for token in tokens])
         tokens = token_format.split(" ")
+
+        filter_tokens = []
+        for token in tokens:
+            try: 
+                word_emb, pos_oh = self.w_vectorizer[token]
+            except Exception as e:
+                continue
+            filter_tokens.append(token)
+        tokens = filter_tokens
 
         if len(tokens) < self.opt.max_text_len:
             # pad with "unk"
@@ -484,6 +560,7 @@ class Text2MotionDatasetV3(data.Dataset):
             tokens = tokens[:self.opt.max_text_len]
             tokens = ['sos/OTHER'] + tokens + ['eos/OTHER']
             sent_len = len(tokens)
+
         pos_one_hots = []
         word_embeddings = []
         for token in tokens:

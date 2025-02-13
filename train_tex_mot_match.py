@@ -77,6 +77,15 @@ if __name__ == '__main__':
         dim_pose = 263
         num_classes = 200 // opt.unit_length
         meta_root = pjoin("./inputs/checkpoints/t2m", 'Comp_v6_KLD01', 'meta')
+    elif opt.dataset_name == 'idea400':
+        opt.data_root = './inputs/motionx'
+        opt.motion_dir = pjoin(opt.data_root, 'motion_data/smplx_322')
+        opt.text_dir = pjoin(opt.data_root, 'motionx_seq_text_v1.1')
+        opt.joints_num = 22
+        opt.max_motion_length = 196
+        dim_pose = 263
+        num_classes = 200 // opt.unit_length
+        meta_root = pjoin("./inputs/checkpoints/t2m", 'Comp_v6_KLD01', 'meta')
     elif opt.dataset_name == 'kit':
         opt.data_root = './dataset/KIT-ML'
         opt.motion_dir = pjoin(opt.data_root, 'new_joint_vecs')
@@ -98,8 +107,8 @@ if __name__ == '__main__':
     std = np.load(pjoin(meta_root, 'std.npy'))
 
     w_vectorizer = WordVectorizer('./glove', 'our_vab')
-    train_split_file = pjoin(opt.data_root, 'train.txt')
-    val_split_file = pjoin(opt.data_root, 'val.txt')
+    train_split_file = pjoin("../Motion-2Dto3D/inputs/hml3d", 'train.txt')
+    val_split_file = pjoin("../Motion-2Dto3D/inputs/hml3d", 'val.txt')
 
     text_encoder, motion_encoder, movement_encoder = build_models(opt)
 

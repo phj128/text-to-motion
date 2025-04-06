@@ -7,7 +7,7 @@ from options.train_options import TrainTexMotMatchOptions
 from networks.modules import *
 from networks.trainers import TextMotionMatchTrainer
 from data.dataset import Text2MotionDatasetV2, collate_fn
-from data.dataset import Text2MotionDatasetV3, Text2MotionDatasetV4
+from data.dataset import Text2MotionDatasetV3, Text2MotionDatasetV4, Text2MotionDatasetV5
 from scripts.motion_process import *
 from torch.utils.data import DataLoader
 from utils.word_vectorizer import WordVectorizer, POS_enumerator
@@ -92,7 +92,15 @@ if __name__ == '__main__':
         opt.text_dir = pjoin(opt.data_root)
         opt.joints_num = 52
         opt.max_motion_length = 300
-        dim_pose = 52*3 * 2
+        dim_pose = 52*3 * 3 + 3 + 1
+        num_classes = 200 // opt.unit_length # useless
+    elif opt.dataset_name == "grab":
+        opt.data_root = './inputs/grab_neutral'
+        opt.motion_dir = pjoin(opt.data_root)
+        opt.text_dir = pjoin(opt.data_root)
+        opt.joints_num = 52
+        opt.max_motion_length = 300
+        dim_pose = 52*3 * 2 + 3
         num_classes = 200 // opt.unit_length # useless
     elif opt.dataset_name == 'kit':
         opt.data_root = './dataset/KIT-ML'
@@ -134,9 +142,12 @@ if __name__ == '__main__':
 
 
     trainer = TextMotionMatchTrainer(opt, text_encoder, motion_encoder, movement_encoder)
-
-    train_dataset = Text2MotionDatasetV4(opt, mean, std, train_split_file, w_vectorizer)
-    val_dataset = Text2MotionDatasetV4(opt, mean, std, val_split_file, w_vectorizer)
+    if opt.dataset_name == "arctic":
+        train_dataset = Text2MotionDatasetV4(opt, mean, std, train_split_file, w_vectorizer)
+        val_dataset = Text2MotionDatasetV4(opt, mean, std, val_split_file, w_vectorizer)
+    else:
+        train_dataset = Text2MotionDatasetV5(opt, mean, std, train_split_file, w_vectorizer)
+        val_dataset = Text2MotionDatasetV5(opt, mean, std, val_split_file, w_vectorizer)
 
     # calcualte statistics #
     # all_motion = []

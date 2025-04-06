@@ -693,7 +693,7 @@ class Text2MotionDatasetV4(data.Dataset):
         3.40842411e-02,  3.31802549e-03, -9.26411196e-04,  2.74143016e-02,
        -1.11688771e-03,  1.04432876e-03,  2.06328234e-02,  2.18617201e-02,
        -1.18390782e-04,  3.17342755e-02,  2.04183589e-02, -2.32791600e-03,
-        2.85721952e-02,  1.87597685e-02, -4.73756618e-03,  2.74504998e-02])
+        2.85721952e-02,  1.87597685e-02, -4.73756618e-03,  2.74504998e-02, 0.0, 0.0, 0.0])
         self.std = np.array([0.02780309, 0.05796335, 0.01587407, 0.02872579, 0.05361869,
        0.01896513, 0.02944513, 0.05404601, 0.01901566, 0.02910634,
        0.06324   , 0.01828851, 0.02820635, 0.02896972, 0.03299947,
@@ -756,7 +756,159 @@ class Text2MotionDatasetV4(data.Dataset):
        0.11610631, 0.11461329, 0.11949686, 0.11224608, 0.1108412 ,
        0.11622194, 0.10920688, 0.10909386, 0.12352401, 0.11749619,
        0.11697663, 0.11636023, 0.11043399, 0.10976336, 0.11195368,
-       0.10686915, 0.10528832])
+       0.10686915, 0.10528832, 1.0, 1.0, 1.0])
+        
+        self.mean = np.array([
+            3.6215e-04,  9.3036e-01,  4.7225e-03,  5.7058e-02,  8.3838e-01,
+        -1.9147e-02, -6.1239e-02,  8.2756e-01, -1.5668e-02, -1.9159e-03,
+         1.0380e+00, -2.3494e-02,  1.2274e-01,  4.7304e-01, -3.5237e-02,
+        -1.1588e-01,  4.7864e-01, -4.6033e-02,  1.0792e-02,  1.1699e+00,
+        -3.0650e-02,  8.9715e-02,  8.2073e-02, -5.6712e-02, -1.1221e-01,
+         8.1692e-02, -6.2729e-02, -2.7512e-03,  1.2199e+00, -2.3524e-03,
+         1.5054e-01,  2.5018e-02,  5.0396e-02, -1.7834e-01,  1.9041e-02,
+         3.6426e-02, -1.3242e-02,  1.3814e+00, -2.8035e-02,  4.2189e-02,
+         1.3027e+00, -4.1376e-03, -4.8237e-02,  1.3024e+00, -1.4527e-02,
+         1.0589e-02,  1.5314e+00,  1.5613e-02,  1.6492e-01,  1.3292e+00,
+         4.0583e-03, -1.5329e-01,  1.3318e+00, -1.9720e-02,  2.0143e-01,
+         1.1126e+00,  7.3713e-02, -2.4307e-01,  1.1359e+00,  7.3806e-02,
+         1.6300e-01,  1.1147e+00,  2.6756e-01, -2.0004e-01,  1.1365e+00,
+         2.6342e-01,  1.5017e-01,  1.1338e+00,  3.4412e-01,  1.4516e-01,
+         1.1318e+00,  3.6492e-01,  1.3649e-01,  1.1259e+00,  3.7337e-01,
+         1.5484e-01,  1.1214e+00,  3.4930e-01,  1.4608e-01,  1.1177e+00,
+         3.6459e-01,  1.3498e-01,  1.1130e+00,  3.7170e-01,  1.5692e-01,
+         1.0935e+00,  3.2900e-01,  1.5013e-01,  1.0926e+00,  3.3525e-01,
+         1.4197e-01,  1.0911e+00,  3.4084e-01,  1.5711e-01,  1.1058e+00,
+         3.3963e-01,  1.4710e-01,  1.1051e+00,  3.5324e-01,  1.3572e-01,
+         1.1018e+00,  3.6018e-01,  1.4618e-01,  1.1292e+00,  2.9787e-01,
+         1.3597e-01,  1.1328e+00,  3.1520e-01,  1.2982e-01,  1.1349e+00,
+         3.3189e-01, -1.8837e-01,  1.1576e+00,  3.3677e-01, -1.8443e-01,
+         1.1539e+00,  3.5766e-01, -1.7720e-01,  1.1469e+00,  3.6724e-01,
+        -1.9441e-01,  1.1462e+00,  3.4317e-01, -1.8694e-01,  1.1399e+00,
+         3.5863e-01, -1.7739e-01,  1.1334e+00,  3.6544e-01, -1.9784e-01,
+         1.1177e+00,  3.2644e-01, -1.9175e-01,  1.1160e+00,  3.3319e-01,
+        -1.8478e-01,  1.1123e+00,  3.3897e-01, -1.9752e-01,  1.1305e+00,
+         3.3540e-01, -1.8801e-01,  1.1275e+00,  3.4872e-01, -1.7830e-01,
+         1.1225e+00,  3.5607e-01, -1.8211e-01,  1.1497e+00,  2.9169e-01,
+        -1.7199e-01,  1.1518e+00,  3.0911e-01, -1.6621e-01,  1.1552e+00,
+         3.2587e-01,  7.0213e-02,  5.7619e-02, -8.3042e-02,  6.0123e-02,
+         7.5013e-02, -1.2836e-01,  5.2243e-02,  8.6179e-02, -8.6381e-02,
+         9.6332e-02,  3.7869e-02, -5.8782e-02, -5.2173e-03,  1.4784e-01,
+        -2.4276e-01, -1.0143e-02,  1.6640e-01, -1.5309e-01,  1.2249e-01,
+         9.7596e-03, -3.2800e-02, -7.7483e-02,  2.3468e-01, -3.2623e-01,
+        -8.1102e-02,  2.5130e-01, -2.5081e-01,  1.2588e-01, -2.6703e-03,
+        -1.3749e-02, -1.0858e-01,  2.3203e-01, -3.5307e-01, -1.1575e-01,
+         2.6114e-01, -2.3311e-01,  1.6176e-01, -3.3952e-02,  2.5813e-02,
+         1.4390e-01, -2.3484e-02, -1.1077e-02,  1.4249e-01, -1.5770e-02,
+         2.1314e-02,  1.8373e-01, -7.1779e-02,  5.5505e-02,  1.5154e-01,
+        -3.8694e-02, -4.9475e-02,  1.4477e-01, -1.4241e-02,  6.5691e-02,
+         9.4513e-02, -3.2354e-03, -1.0755e-01,  7.8438e-02,  1.9139e-02,
+         6.1377e-02,  5.8262e-02, -1.7312e-02, -7.7432e-02,  4.4208e-02,
+         6.8112e-03,  5.6018e-02,  4.6978e-02, -2.7077e-02, -6.2129e-02,
+         4.1812e-02, -2.7504e-02, -5.8600e-02,  3.7289e-02, -2.4696e-02,
+        -5.6454e-02,  4.3541e-02, -2.5816e-02, -6.5385e-02,  3.7765e-02,
+        -2.4419e-02, -6.1339e-02,  3.3673e-02, -2.1472e-02, -5.8244e-02,
+         4.1618e-02, -1.8579e-02, -7.3562e-02,  3.9549e-02, -1.8067e-02,
+        -7.1468e-02,  3.7231e-02, -1.6453e-02, -6.8924e-02,  4.2184e-02,
+        -2.2086e-02, -7.0112e-02,  3.7665e-02, -2.1587e-02, -6.5615e-02,
+         3.3929e-02, -1.8953e-02, -6.2049e-02,  5.4799e-02, -2.0932e-02,
+        -6.6635e-02,  5.1654e-02, -2.2792e-02, -6.1464e-02,  4.8901e-02,
+        -2.4538e-02, -5.8163e-02,  3.4874e-02, -2.7547e-03,  6.0682e-02,
+         2.9569e-02, -3.4999e-03,  5.8642e-02,  2.4903e-02, -1.9037e-03,
+         5.4111e-02,  3.1018e-02, -1.1509e-03,  6.0480e-02,  2.5227e-02,
+         2.8347e-04,  5.5473e-02,  2.0554e-02,  2.8327e-03,  4.9796e-02,
+         2.7585e-02,  6.3226e-03,  5.2998e-02,  2.4978e-02,  7.2230e-03,
+         4.9682e-02,  2.2087e-02,  8.8426e-03,  4.5478e-02,  2.8853e-02,
+         2.7705e-03,  5.6971e-02,  2.4096e-02,  3.8071e-03,  5.1698e-02,
+         1.9854e-02,  5.9536e-03,  4.6086e-02,  4.1690e-02,  2.9923e-03,
+         5.3301e-02,  3.8926e-02,  1.2825e-03,  5.1059e-02,  3.6330e-02,
+        -5.5983e-04,  5.0727e-02,  4.2339e-02,  2.7617e-02, -8.3042e-02,
+         3.0174e-02,  3.2955e-02, -1.2836e-01,  3.2843e-02,  3.8332e-02,
+        -8.6381e-02,  6.1317e-02,  2.0857e-02, -5.8782e-02, -2.1933e-02,
+         5.5733e-02, -2.4276e-01, -9.9116e-03,  6.6011e-02, -1.5309e-01,
+         8.0093e-02,  1.0668e-02, -3.2800e-02, -7.3473e-02,  8.5365e-02,
+        -3.2623e-01, -6.2857e-02,  9.5477e-02, -2.5081e-01,  8.4175e-02,
+         6.5796e-03, -1.3749e-02, -9.7474e-02,  8.3347e-02, -3.5307e-01,
+        -8.1746e-02,  9.9947e-02, -2.3311e-01,  1.1121e-01, -4.2282e-03,
+         2.5813e-02,  9.4286e-02, -1.1418e-03, -1.1077e-02,  9.9610e-02,
+         2.4999e-03,  2.1314e-02,  1.2635e-01, -1.7212e-02,  5.5505e-02,
+         9.1745e-02, -8.4999e-03, -4.9475e-02,  1.0981e-01,  3.5042e-03,
+         6.5691e-02,  5.0898e-02,  1.9646e-03, -1.0755e-01,  7.9278e-02,
+         1.3286e-02,  6.1377e-02,  3.0714e-02, -5.7486e-03, -7.7432e-02,
+         5.5744e-02,  6.6004e-03,  5.6018e-02,  2.4864e-02, -1.0399e-02,
+        -6.2129e-02,  2.1277e-02, -1.1158e-02, -5.8600e-02,  1.7929e-02,
+        -1.1002e-02, -5.6454e-02,  2.2690e-02, -9.7744e-03, -6.5385e-02,
+         1.8974e-02, -1.0744e-02, -6.1339e-02,  1.6376e-02, -1.0702e-02,
+        -5.8244e-02,  2.1308e-02, -7.1081e-03, -7.3562e-02,  2.0467e-02,
+        -7.8156e-03, -7.1468e-02,  1.9237e-02, -7.9991e-03, -6.8924e-02,
+         2.1726e-02, -8.3405e-03, -7.0112e-02,  1.9273e-02, -9.5943e-03,
+        -6.5615e-02,  1.7013e-02, -9.7340e-03, -6.2049e-02,  2.9355e-02,
+        -8.1690e-03, -6.6635e-02,  2.7723e-02, -1.0111e-02, -6.1464e-02,
+         2.6390e-02, -1.1238e-02, -5.8163e-02,  4.9231e-02,  2.5262e-03,
+         6.0682e-02,  4.4960e-02,  1.8485e-03,  5.8642e-02,  4.0488e-02,
+         1.3844e-03,  5.4111e-02,  4.7781e-02,  3.0297e-03,  6.0480e-02,
+         4.2627e-02,  2.7566e-03,  5.5473e-02,  3.8127e-02,  2.2515e-03,
+         4.9796e-02,  4.6109e-02,  4.9073e-03,  5.2998e-02,  4.3835e-02,
+         4.3943e-03,  4.9682e-02,  4.1053e-02,  4.1096e-03,  4.5478e-02,
+         4.6858e-02,  4.0758e-03,  5.6971e-02,  4.2494e-02,  3.3414e-03,
+         5.1698e-02,  3.8318e-02,  2.7932e-03,  4.6086e-02,  5.2182e-02,
+         4.1619e-03,  5.3301e-02,  4.9846e-02,  2.6774e-03,  5.1059e-02,
+         4.7836e-02,  1.8911e-03,  5.0727e-02, -3.6344e-02,  1.1015e+00,
+         4.4047e-01,  7.6039e-01
+        ])
+        self.std = np.array([
+            0.0238, 0.0556, 0.0287, 0.0244, 0.0516, 0.0275, 0.0260, 0.0514, 0.0274,
+        0.0249, 0.0613, 0.0319, 0.0218, 0.0280, 0.0282, 0.0243, 0.0292, 0.0313,
+        0.0269, 0.0698, 0.0346, 0.0259, 0.0069, 0.0274, 0.0280, 0.0072, 0.0331,
+        0.0272, 0.0730, 0.0358, 0.0313, 0.0043, 0.0324, 0.0252, 0.0031, 0.0369,
+        0.0329, 0.0815, 0.0367, 0.0297, 0.0778, 0.0362, 0.0301, 0.0766, 0.0358,
+        0.0371, 0.0846, 0.0420, 0.0332, 0.0753, 0.0479, 0.0352, 0.0702, 0.0441,
+        0.0836, 0.0974, 0.0953, 0.0753, 0.0996, 0.1047, 0.1764, 0.1181, 0.1390,
+        0.1635, 0.1123, 0.1586, 0.2142, 0.1341, 0.1579, 0.2263, 0.1404, 0.1647,
+        0.2355, 0.1434, 0.1686, 0.2160, 0.1376, 0.1656, 0.2280, 0.1423, 0.1729,
+        0.2382, 0.1450, 0.1778, 0.2088, 0.1354, 0.1705, 0.2154, 0.1376, 0.1760,
+        0.2226, 0.1397, 0.1816, 0.2123, 0.1369, 0.1690, 0.2237, 0.1406, 0.1758,
+        0.2337, 0.1431, 0.1811, 0.1941, 0.1214, 0.1418, 0.2039, 0.1262, 0.1421,
+        0.2139, 0.1310, 0.1446, 0.2016, 0.1213, 0.1811, 0.2138, 0.1262, 0.1893,
+        0.2224, 0.1284, 0.1940, 0.2017, 0.1254, 0.1891, 0.2132, 0.1288, 0.1975,
+        0.2221, 0.1298, 0.2029, 0.1915, 0.1257, 0.1929, 0.1971, 0.1264, 0.1991,
+        0.2029, 0.1271, 0.2052, 0.1961, 0.1261, 0.1920, 0.2069, 0.1282, 0.1997,
+        0.2159, 0.1294, 0.2060, 0.1820, 0.1113, 0.1625, 0.1930, 0.1139, 0.1631,
+        0.2035, 0.1165, 0.1663, 0.2939, 0.2720, 0.2592, 0.3344, 0.3087, 0.2811,
+        0.3324, 0.3052, 0.2914, 0.2869, 0.2745, 0.2669, 0.4807, 0.4669, 0.3729,
+        0.4748, 0.4592, 0.4076, 0.2774, 0.2871, 0.2751, 0.6576, 0.6759, 0.5191,
+        0.6550, 0.6730, 0.5557, 0.2610, 0.2810, 0.2652, 0.6592, 0.6966, 0.5088,
+        0.6569, 0.6963, 0.5714, 0.2874, 0.3429, 0.3051, 0.2676, 0.3070, 0.2819,
+        0.2721, 0.3085, 0.2823, 0.3005, 0.3892, 0.3264, 0.2827, 0.3263, 0.3042,
+        0.2888, 0.3243, 0.2943, 0.2743, 0.2616, 0.2582, 0.2710, 0.2533, 0.2636,
+        0.2178, 0.1955, 0.2112, 0.2080, 0.1934, 0.1994, 0.2164, 0.1885, 0.2151,
+        0.2200, 0.1896, 0.2190, 0.2217, 0.1899, 0.2208, 0.2218, 0.1922, 0.2189,
+        0.2248, 0.1934, 0.2223, 0.2265, 0.1939, 0.2246, 0.2264, 0.1965, 0.2197,
+        0.2271, 0.1967, 0.2212, 0.2281, 0.1971, 0.2232, 0.2247, 0.1948, 0.2197,
+        0.2262, 0.1951, 0.2222, 0.2276, 0.1955, 0.2247, 0.2093, 0.1865, 0.2071,
+        0.2057, 0.1826, 0.2055, 0.2053, 0.1809, 0.2065, 0.2061, 0.1913, 0.1946,
+        0.2092, 0.1930, 0.1974, 0.2106, 0.1934, 0.1997, 0.2103, 0.1943, 0.1985,
+        0.2129, 0.1959, 0.2017, 0.2144, 0.1962, 0.2042, 0.2134, 0.1954, 0.2026,
+        0.2142, 0.1957, 0.2038, 0.2154, 0.1963, 0.2054, 0.2123, 0.1951, 0.2010,
+        0.2135, 0.1958, 0.2029, 0.2151, 0.1966, 0.2054, 0.1998, 0.1863, 0.1912,
+        0.1966, 0.1823, 0.1880, 0.1963, 0.1815, 0.1873, 0.2954, 0.2807, 0.2592,
+        0.3333, 0.3214, 0.2811, 0.3347, 0.3150, 0.2914, 0.2922, 0.2807, 0.2669,
+        0.4806, 0.4862, 0.3729, 0.4821, 0.4767, 0.4076, 0.2889, 0.2907, 0.2751,
+        0.6686, 0.7005, 0.5191, 0.6721, 0.6977, 0.5557, 0.2753, 0.2828, 0.2652,
+        0.6725, 0.7189, 0.5088, 0.6804, 0.7199, 0.5714, 0.3134, 0.3419, 0.3051,
+        0.2871, 0.3095, 0.2819, 0.2926, 0.3070, 0.2823, 0.3361, 0.3891, 0.3264,
+        0.3017, 0.3337, 0.3042, 0.3111, 0.3177, 0.2943, 0.2727, 0.2750, 0.2582,
+        0.2807, 0.2426, 0.2636, 0.2110, 0.2094, 0.2112, 0.2198, 0.1766, 0.1994,
+        0.2077, 0.2036, 0.2151, 0.2102, 0.2051, 0.2190, 0.2109, 0.2056, 0.2208,
+        0.2122, 0.2075, 0.2189, 0.2141, 0.2088, 0.2223, 0.2150, 0.2094, 0.2246,
+        0.2164, 0.2113, 0.2197, 0.2168, 0.2113, 0.2212, 0.2176, 0.2116, 0.2232,
+        0.2147, 0.2099, 0.2197, 0.2155, 0.2102, 0.2222, 0.2163, 0.2106, 0.2247,
+        0.2023, 0.2004, 0.2071, 0.1985, 0.1963, 0.2055, 0.1977, 0.1948, 0.2065,
+        0.2189, 0.1730, 0.1946, 0.2219, 0.1749, 0.1974, 0.2234, 0.1756, 0.1997,
+        0.2227, 0.1762, 0.1985, 0.2255, 0.1779, 0.2017, 0.2271, 0.1785, 0.2042,
+        0.2249, 0.1783, 0.2026, 0.2260, 0.1785, 0.2038, 0.2275, 0.1790, 0.2054,
+        0.2242, 0.1775, 0.2010, 0.2258, 0.1782, 0.2029, 0.2276, 0.1790, 0.2054,
+        0.2123, 0.1690, 0.1912, 0.2088, 0.1653, 0.1880, 0.2084, 0.1645, 0.1873,
+        0.0734, 0.0953, 0.0965, 0.9984])
 
         self.smplx = make_smplx(type="wholebody")
 
@@ -765,12 +917,12 @@ class Text2MotionDatasetV4(data.Dataset):
         # ./inputs/arctic_neutral/s01/xx.pt
         max_length = -1
         for path in tqdm(Path(dataset_path).glob("**/*.pt")):
-            if self.split == "train":
-                if path.parent.name in self.test_sbj:
-                    continue
-            else:
-                if path.parent.name not in self.test_sbj:
-                    continue
+            # if self.split == "train":
+            #     if path.parent.name in self.test_sbj:
+            #         continue
+            # else:
+            #     if path.parent.name not in self.test_sbj:
+            #         continue
 
             vid_name = path.parent.name + "_" + path.name
             # print(f"Loading {vid_name}")
@@ -989,12 +1141,479 @@ class Text2MotionDatasetV4(data.Dataset):
         obj_motion = processed_data["global_obj_center"]
         obj_rot = matrix.matrix_to_rotation_6d(matrix.get_rotation(processed_data["obj"]))
         obj_center_mat = matrix.get_TRS(matrix.get_rotation(processed_data["obj"])[..., 0, :, :], obj_motion)
+        obj_arti_mat = matrix.get_TRS(matrix.get_rotation(processed_data["obj"])[..., 1, :, :], obj_motion)
+        obj_name = self.idx2meta[idx].split("_")[1]
+        m_length = processed_data["length"]
+        text = processed_data["caption"]
+        angles = processed_data["angles"]
+
+        obj_invhumanmotion = matrix.get_relative_position_to(human_motion, obj_center_mat)
+        obj_invhumanmotion2 = matrix.get_relative_position_to(human_motion, obj_arti_mat)
+        motion = torch.cat([human_motion.flatten(-2), obj_invhumanmotion.flatten(-2), obj_invhumanmotion2.flatten(-2), obj_motion, angles], dim=-1)
+        motion = motion.numpy()
+
+        m_length = min(m_length, self.max_motion_length)
+
+        # Randomly select a caption
+        caption = text
+        caption = caption.replace('/', ' ')
+        tokens = self.token_model(caption)
+        token_format = " ".join([f"{token.text}/{token.pos_}" for token in tokens])
+        tokens = token_format.split(" ")
+
+        filter_tokens = []
+        for token in tokens:
+            try: 
+                word_emb, pos_oh = self.w_vectorizer[token]
+            except Exception as e:
+                continue
+            filter_tokens.append(token)
+        tokens = filter_tokens
+
+        if len(tokens) < self.opt.max_text_len:
+            # pad with "unk"
+            tokens = ['sos/OTHER'] + tokens + ['eos/OTHER']
+            sent_len = len(tokens)
+            tokens = tokens + ['unk/OTHER'] * (self.opt.max_text_len + 2 - sent_len)
+        else:
+            # crop
+            tokens = tokens[:self.opt.max_text_len]
+            tokens = ['sos/OTHER'] + tokens + ['eos/OTHER']
+            sent_len = len(tokens)
+
+        pos_one_hots = []
+        word_embeddings = []
+        for token in tokens:
+            word_emb, pos_oh = self.w_vectorizer[token]
+            pos_one_hots.append(pos_oh[None, :])
+            word_embeddings.append(word_emb[None, :])
+        pos_one_hots = np.concatenate(pos_one_hots, axis=0)
+        word_embeddings = np.concatenate(word_embeddings, axis=0)
+
+        # Crop the motions in to times of 4, and introduce small variations
+        if self.opt.unit_length < 10:
+            coin2 = np.random.choice(['single', 'single', 'double'])
+        else:
+            coin2 = 'single'
+
+        if coin2 == 'double':
+            m_length = (m_length // self.opt.unit_length - 1) * self.opt.unit_length
+        elif coin2 == 'single':
+            m_length = (m_length // self.opt.unit_length) * self.opt.unit_length
+        if len(motion) > m_length:
+            idx = random.randint(0, len(motion) - m_length)
+        else:
+            idx = 0
+        motion = motion[idx:idx+m_length]
+
+        "Z Normalization"
+        motion = (motion - self.mean) / self.std
+
+        if m_length < self.max_motion_length:
+            motion = np.concatenate([motion,
+                                     np.zeros((self.max_motion_length - m_length, motion.shape[1]))
+                                     ], axis=0)
+        return word_embeddings, pos_one_hots, caption, sent_len, motion, m_length, '_'.join(tokens)
+
+
+
+plural_dict = {
+'offhand': 'offhands',
+'pass': 'passes',
+'lift': 'lifts', 
+'drink': 'drinks from', 
+'brush': 'brushes with',
+'eat': 'eats', 
+'peel': 'peels', 
+'takepicture': 'takes picture with', 
+'see': 'sees in', 
+'wear': 'wears', 
+'play': 'plays', 
+'clean': 'cleans', 
+'browse': 'browses on', 
+'inspect': 'inspects', 
+'pour': 'pours from', 
+'use': 'uses', 
+'switchON': 'switches on', 
+'cook': 'cooks on', 
+'toast': 'toasts with', 
+'staple': 'staples with', 
+'squeeze': 'squeezes', 
+'set': 'sets', 
+'open': 'opens', 
+'chop': 'chops with', 
+'screw': 'screws', 
+'call': 'calls on', 
+'shake': 'shakes', 
+'fly': 'flies',
+'stamp': 'stamps with'    
+}
+
+### GRAB TRAINING ###
+class Text2MotionDatasetV5(data.Dataset):
+    def __init__(self, opt, mean, std, split, w_vectorizer):
+        self.opt = opt
+        self.w_vectorizer = w_vectorizer
+        self.max_length = 20
+        self.pointer = 0
+        self.max_motion_length = opt.max_motion_length
+        min_motion_len = 40 
+
+        self.token_model = spacy.load("en_core_web_sm")
+        self.split = split
+
+        self.test_sbj = ["s01", "s10"]
+
+        self.mean = np.array([
+         1.0945e-02,  9.2527e-01,  2.6298e-01,  5.8905e-02,  8.3309e-01,
+         2.3395e-01, -4.9109e-02,  8.2326e-01,  2.4943e-01,  7.4623e-03,
+         1.0316e+00,  2.3678e-01,  1.2285e-01,  4.6483e-01,  2.3049e-01,
+        -9.8619e-02,  4.7103e-01,  2.5729e-01,  1.6376e-02,  1.1674e+00,
+         2.4268e-01,  7.7060e-02,  7.7096e-02,  1.9596e-01, -8.5606e-02,
+         7.6025e-02,  2.1980e-01,  9.5005e-03,  1.2165e+00,  2.7055e-01,
+         1.4056e-01,  1.0431e-02,  2.9358e-01, -1.3148e-01,  1.1834e-02,
+         3.2709e-01, -3.1169e-03,  1.3778e+00,  2.7218e-01,  5.0842e-02,
+         1.2993e+00,  2.7291e-01, -3.3089e-02,  1.2974e+00,  2.7828e-01,
+         2.7206e-02,  1.5272e+00,  3.2509e-01,  1.6170e-01,  1.3377e+00,
+         2.4813e-01, -1.2545e-01,  1.3381e+00,  2.9425e-01,  2.4754e-01,
+         1.1400e+00,  1.8848e-01, -2.5493e-01,  1.1641e+00,  3.2096e-01,
+         3.6102e-01,  1.0173e+00,  2.6597e-01, -2.9673e-01,  1.0877e+00,
+         4.4232e-01,  3.9745e-01,  9.7100e-01,  3.0913e-01,  4.0714e-01,
+         9.5391e-01,  3.1714e-01,  4.0522e-01,  9.3917e-01,  3.1761e-01,
+         4.0804e-01,  9.6378e-01,  2.9540e-01,  4.1041e-01,  9.4437e-01,
+         2.9858e-01,  4.0531e-01,  9.3076e-01,  2.9657e-01,  4.0271e-01,
+         9.6143e-01,  2.6003e-01,  4.0213e-01,  9.4849e-01,  2.6033e-01,
+         3.9916e-01,  9.3727e-01,  2.5928e-01,  4.0721e-01,  9.6221e-01,
+         2.7563e-01,  4.1084e-01,  9.4498e-01,  2.8099e-01,  4.0637e-01,
+         9.3145e-01,  2.8015e-01,  3.6337e-01,  9.9405e-01,  2.9475e-01,
+         3.6285e-01,  9.7710e-01,  3.0864e-01,  3.6829e-01,  9.6439e-01,
+         3.2000e-01, -3.0858e-01,  1.0742e+00,  4.9942e-01, -3.1349e-01,
+         1.0646e+00,  5.1365e-01, -3.1180e-01,  1.0512e+00,  5.1720e-01,
+        -3.2044e-01,  1.0661e+00,  4.9599e-01, -3.2135e-01,  1.0518e+00,
+         5.0508e-01, -3.1810e-01,  1.0381e+00,  5.0521e-01, -3.2658e-01,
+         1.0491e+00,  4.7037e-01, -3.2458e-01,  1.0399e+00,  4.7284e-01,
+        -3.2196e-01,  1.0302e+00,  4.7360e-01, -3.2551e-01,  1.0570e+00,
+         4.8251e-01, -3.2599e-01,  1.0458e+00,  4.9171e-01, -3.2224e-01,
+         1.0334e+00,  4.9221e-01, -2.8745e-01,  1.0781e+00,  4.6987e-01,
+        -2.8349e-01,  1.0685e+00,  4.8536e-01, -2.8421e-01,  1.0628e+00,
+         4.9815e-01,  8.6836e-02, -4.9881e-02, -4.5345e-02,  8.5051e-02,
+        -5.5314e-02, -9.2196e-02,  8.9184e-02, -4.6338e-02, -9.9366e-02,
+         9.2370e-02, -5.0935e-02,  1.1193e-02,  7.3614e-02, -6.0331e-02,
+        -2.8542e-01,  8.1409e-02, -4.2909e-02, -2.8497e-01,  9.3975e-02,
+        -5.1085e-02,  8.1797e-02,  7.2443e-02, -5.9796e-02, -4.8939e-01,
+         7.4558e-02, -4.6661e-02, -4.9112e-01,  9.2372e-02, -4.8868e-02,
+         1.0651e-01,  5.7250e-02, -5.8502e-02, -5.2573e-01,  6.4419e-02,
+        -3.7514e-02, -5.2795e-01,  9.6411e-02, -4.7148e-02,  1.9082e-01,
+         9.1586e-02, -5.1533e-02,  1.5051e-01,  9.5677e-02, -4.4783e-02,
+         1.4798e-01,  9.2076e-02, -4.5155e-02,  2.6952e-01,  8.9082e-02,
+        -6.1099e-02,  1.7323e-01,  9.9847e-02, -3.6607e-02,  1.6749e-01,
+         8.7841e-02, -6.9133e-02,  7.5352e-02,  9.4932e-02, -2.7707e-02,
+         6.9584e-02,  7.1748e-02, -6.9298e-02,  1.2345e-02,  7.5787e-02,
+        -1.9491e-02,  2.0672e-02,  6.3908e-02, -6.7674e-02, -1.1397e-02,
+         6.2152e-02, -6.7235e-02, -1.9754e-02,  6.1912e-02, -6.6735e-02,
+        -2.7097e-02,  6.4679e-02, -6.9293e-02, -1.4668e-02,  6.3872e-02,
+        -6.8723e-02, -2.4262e-02,  6.4029e-02, -6.8148e-02, -3.1089e-02,
+         6.8918e-02, -7.1469e-02, -1.5457e-02,  6.8610e-02, -7.1280e-02,
+        -2.2032e-02,  6.8625e-02, -7.0940e-02, -2.7587e-02,  6.6909e-02,
+        -7.0660e-02, -1.5196e-02,  6.5822e-02, -7.0135e-02, -2.3810e-02,
+         6.5671e-02, -6.9572e-02, -3.0657e-02,  6.7987e-02, -6.6786e-02,
+        -4.6408e-05,  6.6065e-02, -6.5118e-02, -8.7722e-03,  6.4372e-02,
+        -6.4313e-02, -1.5403e-02,  6.7528e-02, -1.5348e-02,  1.0903e-02,
+         6.5112e-02, -1.4135e-02,  5.4821e-03,  6.3787e-02, -1.4279e-02,
+        -2.2000e-03,  6.8290e-02, -1.4977e-02,  6.3879e-03,  6.6074e-02,
+        -1.4710e-02, -1.6968e-03,  6.5163e-02, -1.5397e-02, -9.5054e-03,
+         7.1527e-02, -1.6646e-02, -2.3459e-03,  7.0596e-02, -1.7319e-02,
+        -7.7669e-03,  6.9906e-02, -1.8056e-02, -1.3093e-02,  7.0090e-02,
+        -1.5738e-02,  1.7157e-03,  6.8227e-02, -1.5703e-02, -5.0298e-03,
+         6.7503e-02, -1.6640e-02, -1.1993e-02,  7.0804e-02, -1.8562e-02,
+         1.4194e-02,  6.7986e-02, -1.7941e-02,  8.2413e-03,  6.6051e-02,
+        -1.7120e-02,  4.4663e-03,  1.9168e-02,  1.0272e+00,  8.8671e-01
+        ])
+        self.std = np.array([
+            0.0763, 0.0400, 0.2275, 0.0721, 0.0369, 0.2235, 0.0736, 0.0358, 0.2295,
+        0.0784, 0.0442, 0.2309, 0.0642, 0.0244, 0.2324, 0.0689, 0.0232, 0.2428,
+        0.0874, 0.0584, 0.2368, 0.0637, 0.0214, 0.2490, 0.0649, 0.0181, 0.2552,
+        0.0920, 0.0642, 0.2398, 0.0749, 0.0116, 0.2526, 0.0813, 0.0105, 0.2600,
+        0.1027, 0.0733, 0.2488, 0.0967, 0.0692, 0.2399, 0.0985, 0.0688, 0.2476,
+        0.1167, 0.0772, 0.2547, 0.0981, 0.0740, 0.2420, 0.1079, 0.0694, 0.2675,
+        0.1391, 0.1142, 0.2515, 0.1658, 0.1233, 0.3264, 0.2099, 0.2025, 0.3002,
+        0.2874, 0.1923, 0.3909, 0.2488, 0.2455, 0.3189, 0.2616, 0.2590, 0.3257,
+        0.2722, 0.2635, 0.3285, 0.2477, 0.2478, 0.3276, 0.2618, 0.2575, 0.3341,
+        0.2734, 0.2602, 0.3365, 0.2368, 0.2337, 0.3325, 0.2445, 0.2381, 0.3358,
+        0.2536, 0.2422, 0.3397, 0.2416, 0.2410, 0.3312, 0.2540, 0.2511, 0.3371,
+        0.2659, 0.2552, 0.3396, 0.2315, 0.2180, 0.3019, 0.2445, 0.2277, 0.3018,
+        0.2552, 0.2386, 0.3041, 0.3437, 0.2250, 0.4119, 0.3605, 0.2353, 0.4206,
+        0.3707, 0.2395, 0.4243, 0.3434, 0.2273, 0.4252, 0.3585, 0.2350, 0.4338,
+        0.3687, 0.2380, 0.4371, 0.3259, 0.2179, 0.4360, 0.3340, 0.2216, 0.4402,
+        0.3424, 0.2252, 0.4447, 0.3342, 0.2228, 0.4324, 0.3488, 0.2309, 0.4397,
+        0.3595, 0.2346, 0.4425, 0.3150, 0.2038, 0.3899, 0.3310, 0.2128, 0.3897,
+        0.3462, 0.2216, 0.3930, 0.4710, 0.4962, 0.3089, 0.4914, 0.5218, 0.3342,
+        0.4928, 0.5084, 0.3317, 0.4794, 0.5106, 0.3123, 0.5320, 0.5827, 0.4805,
+        0.5350, 0.5560, 0.4701, 0.4693, 0.5125, 0.3283, 0.6080, 0.6940, 0.6974,
+        0.6103, 0.6767, 0.6947, 0.4532, 0.4993, 0.3330, 0.5769, 0.6786, 0.7266,
+        0.5820, 0.6530, 0.7204, 0.4531, 0.5184, 0.3907, 0.4487, 0.5094, 0.3598,
+        0.4528, 0.5026, 0.3576, 0.4276, 0.5185, 0.4490, 0.4677, 0.5430, 0.3854,
+        0.4638, 0.5031, 0.3718, 0.5187, 0.5801, 0.3632, 0.5005, 0.4931, 0.3295,
+        0.5330, 0.5831, 0.3757, 0.5047, 0.4646, 0.3149, 0.5402, 0.5844, 0.3915,
+        0.5456, 0.5885, 0.3993, 0.5489, 0.5910, 0.4026, 0.5518, 0.5972, 0.3988,
+        0.5570, 0.6015, 0.4049, 0.5604, 0.6043, 0.4075, 0.5644, 0.6131, 0.4011,
+        0.5674, 0.6155, 0.4039, 0.5704, 0.6183, 0.4067, 0.5597, 0.6070, 0.4009,
+        0.5637, 0.6102, 0.4064, 0.5669, 0.6128, 0.4095, 0.5264, 0.5725, 0.3749,
+        0.5240, 0.5677, 0.3762, 0.5248, 0.5668, 0.3802, 0.5121, 0.4590, 0.3198,
+        0.5180, 0.4607, 0.3236, 0.5212, 0.4621, 0.3245, 0.5223, 0.4677, 0.3249,
+        0.5277, 0.4699, 0.3276, 0.5316, 0.4721, 0.3285, 0.5316, 0.4798, 0.3273,
+        0.5342, 0.4811, 0.3284, 0.5374, 0.4833, 0.3298, 0.5284, 0.4749, 0.3268,
+        0.5330, 0.4766, 0.3297, 0.5366, 0.4786, 0.3310, 0.4978, 0.4537, 0.3100,
+        0.4952, 0.4486, 0.3088, 0.4970, 0.4476, 0.3105, 0.2981, 0.1857, 0.2141
+            ])
+
+        self.smplx = make_smplx(type="wholebody")
+
+        self.motion_files = {}
+        dataset_path = "./inputs/grab_neutral"
+        # ./inputs/arctic_neutral/s01/xx.pt
+        max_length = -1
+        for path in tqdm(Path(dataset_path).glob("**/*.pt")):
+            # if self.split == "train":
+            #     if path.parent.name in self.test_sbj:
+            #         continue
+            # else:
+            #     if path.parent.name not in self.test_sbj:
+            #         continue
+
+            vid_name = path.parent.name + "_" + path.name
+            # print(f"Loading {vid_name}")
+            motion_data = load_arctic_data(path)
+            humanoid_localmat, humanoid_globalmat = get_humanoid_data(motion_data)
+            obj_localmat, obj_globalmat = get_obj_data(motion_data)
+            contact = motion_data["contact"]
+            beta = motion_data["humanoid"]["betas"]
+            
+            obj_name = path.name.split("_")[0] 
+            grab_original_path = "./inputs/grab_extracted/grab"
+            npz_path = os.path.join(grab_original_path, path.parent.name, path.name.replace(".pt", ".npz"))
+            npz = np.load(npz_path, allow_pickle=True)
+            motion_intent = npz["motion_intent"]
+            motion_intent = motion_intent.item()
+            caption = f"The person {plural_dict[motion_intent]} the {obj_name}."
+
+            self.motion_files[vid_name] = {
+                "humanoid_localmat": humanoid_localmat,
+                "humanoid_globalmat": humanoid_globalmat,
+                "obj_localmat": obj_localmat,
+                "obj_globalmat": obj_globalmat,
+                "contact": contact,
+                "beta": beta,
+                "caption": caption,
+            }
+            # print(f"seq {vid_name} length: {humanoid_localmat.shape[0]}")
+            max_length = max(max_length, humanoid_localmat.shape[0])
+        print(f"max_length: {max_length}")
+        self.idx2meta = []
+        for k, v in self.motion_files.items():
+            L = v["beta"].shape[0]
+            for _ in range(max(L // self.max_motion_length, 1)):
+                self.idx2meta.append(k)
+        self.bps_data = torch.load("./inputs/grab_bps.pth")
+        print(f"Motion dataset size: {len(self.idx2meta)}")
+    
+    def _load_data(self, idx):
+        vid = self.idx2meta[idx]
+        humanoid_localmat = self.motion_files[vid]["humanoid_localmat"]
+        humanoid_globalmat = self.motion_files[vid]["humanoid_globalmat"]
+        obj_localmat = self.motion_files[vid]["obj_localmat"]
+        obj_globalmat = self.motion_files[vid]["obj_globalmat"]
+        caption = self.motion_files[vid]["caption"]
+
+        start_id = 0
+
+        raw_len = humanoid_globalmat.shape[0] - start_id
+        # Get {tgt_len} frames from data
+        # Random select a subset with speed augmentation  [start, end)
+        tgt_len = 300
+        # raw_subset_len = np.random.randint(int(tgt_len / self.l_factor), int(tgt_len * self.l_factor))
+        raw_subset_len = tgt_len
+        if raw_subset_len <= raw_len:
+            start = np.random.randint(0, raw_len - raw_subset_len + 1)
+            end = start + raw_subset_len
+        else:  # interpolation will use all possible frames (results in a slow motion)
+            start = 0
+            end = raw_len
+
+
+        humanoid_localmat = humanoid_localmat[start:end].clone()
+        humanoid_globalmat = humanoid_globalmat[start:end].clone()
+        obj_localmat = obj_localmat[start:end].clone()
+        obj_globalmat = obj_globalmat[start:end].clone()
+
+        humanoid_globalmat, obj_globalmat = aztoay_hoi(humanoid_globalmat, obj_globalmat)
+        # modify root position
+        humanoid_localmat[:, 0] = humanoid_globalmat[:, 0]
+        obj_localmat[:, 0] = obj_globalmat[:, 0]
+
+        contact = self.motion_files[vid]["contact"]
+        seq_contact = []
+        for k in [
+            "L_Index3",
+            "L_Middle3",
+            "L_Pinky3",
+            "L_Ring3",
+            "L_Thumb3",
+            "R_Index3",
+            "R_Middle3",
+            "R_Pinky3",
+            "R_Ring3",
+            "R_Thumb3",
+        ]:
+            c = contact[k][start:end].clone()
+            seq_contact.append(c)
+        seq_contact = torch.stack(seq_contact, dim=-1)  # (N, 10)
+
+        beta = self.motion_files[vid]["beta"]
+        seq_beta = beta[start:end].clone()
+
+        # all seqs larger than 300 frames, no need to pad
+
+        select_length = end - start
+        # if select_length < self.motion_frames:
+        #     humanoid_localmat = torch.cat(
+        #         [humanoid_localmat, humanoid_localmat[-1:].repeat(self.motion_frames - select_length, 1, 1, 1)], dim=0
+        #     )
+        #     humanoid_globalmat = torch.cat(
+        #         [humanoid_globalmat, humanoid_globalmat[-1:].repeat(self.motion_frames - select_length, 1, 1, 1)], dim=0
+        #     )
+        #     obj_localmat = torch.cat(
+        #         [obj_localmat, obj_localmat[-1:].repeat(self.motion_frames - select_length, 1, 1, 1)], dim=0
+        #     )
+        #     obj_globalmat = torch.cat(
+        #         [obj_globalmat, obj_globalmat[-1:].repeat(self.motion_frames - select_length, 1, 1, 1)], dim=0
+        #     )
+        #     seq_contact = torch.cat(
+        #         [seq_contact, seq_contact[-1:].repeat(self.motion_frames - select_length, 1)], dim=0
+        #     )
+        #     seq_beta = torch.cat([seq_beta, seq_beta[-1:].repeat(self.motion_frames - select_length, 1)], dim=0)
+
+        data = {
+            "humanoid_localmat": humanoid_localmat,
+            "humanoid_globalmat": humanoid_globalmat,
+            "obj_localmat": obj_localmat,
+            "obj_globalmat": obj_globalmat,
+            "contact": seq_contact,
+            "beta": seq_beta,
+            "length": select_length,
+            "caption": caption,
+        }
+
+        if vid in self.bps_data.keys():
+            scale = self.bps_data[vid]["scale"]
+            center = self.bps_data[vid]["center"]
+            data["scale"] = scale
+            data["center"] = center
+
+        return data
+
+    def _process_data(self, data, idx):
+        length = data["length"]
+        beta = data["beta"]
+        mask = torch.ones((length, 1), dtype=torch.bool)  # always supervise full
+        humanoid_localmat = data["humanoid_localmat"]
+        smplx_localmat = humanoid_localmat[:, HUMANOID2SMPLX]
+
+        local_skeleton = self.smplx.get_local_skeleton_with_finger(beta[:1])
+        root_0 = local_skeleton[:, 0]  # (1, 3)
+        root_transl = matrix.get_position(smplx_localmat[:, 0])  # (N, 3)
+        transl = root_transl - root_0
+
+        global_orient_rotmat = matrix.get_rotation(smplx_localmat[:, 0])  # (N, 3, 3)
+        global_orient = matrix.matrix_to_axis_angle(global_orient_rotmat)  # (N, 3)
+
+        body_pose_rotmat = matrix.get_rotation(smplx_localmat[:, 1:22])  # (N, 21, 3, 3)
+        body_pose = matrix.matrix_to_axis_angle(body_pose_rotmat)  # (N, 21, 3)
+        left_hand_rotmat = matrix.get_rotation(smplx_localmat[:, 22:37])  # (N, 15, 3, 3)
+        left_hand_pose = matrix.matrix_to_axis_angle(left_hand_rotmat)  # (N, 15, 3)
+        right_hand_rotmat = matrix.get_rotation(smplx_localmat[:, 37:52])  # (N, 15, 3, 3)
+        right_hand_pose = matrix.matrix_to_axis_angle(right_hand_rotmat)  # (N, 15, 3)
+
+        local_pos = matrix.get_position(smplx_localmat)  # (N, 52, 3)
+        local_skeleton = local_pos[:1, 1:]  # (1, 51, 3)
+        local_skeleton = torch.cat([root_0[None], local_skeleton], dim=1)  # (1, 52, 3)
+        return_data = {
+            "length": length,
+            "mask": mask,
+        }
+        return_data["gt_global_pos"] = matrix.get_position(data["humanoid_globalmat"])[:, HUMANOID2SMPLX]
+        return_data["transl"] = transl
+        return_data["global_orient"] = global_orient
+        return_data["body_pose"] = body_pose.flatten(-2)
+        return_data["left_hand_pose"] = left_hand_pose.flatten(-2)
+        return_data["right_hand_pose"] = right_hand_pose.flatten(-2)
+        return_data["skeleton"] = local_skeleton
+        return_data["beta"] = beta
+
+        left_handpose = get_handpose(humanoid_localmat, is_right=False)
+        left_base_rotmat = matrix.get_rotation(data["humanoid_globalmat"][:, 17])
+        left_base_pos = matrix.get_position(data["humanoid_globalmat"][:, 17])
+        left_hand_localpos = matrix.get_position(left_handpose)
+        return_data["left_base_rotmat"] = left_base_rotmat
+        return_data["left_base_pos"] = left_base_pos
+        return_data["left_handpose"] = left_handpose
+        return_data["left_hand_pose"] = matrix.matrix_to_axis_angle(matrix.get_rotation(left_handpose)).flatten(-2)
+        return_data["left_hand_localpos"] = left_hand_localpos
+        handpose_tip = get_handpose(humanoid_localmat, is_right=False, istip=True)
+        handtip_localpos = matrix.get_position(handpose_tip)
+        return_data["left_handtip_localpos"] = handtip_localpos
+
+        right_handpose = get_handpose(humanoid_localmat, is_right=True)
+        right_base_rotmat = matrix.get_rotation(data["humanoid_globalmat"][:, 41])
+        right_base_pos = matrix.get_position(data["humanoid_globalmat"][:, 41])
+        righthand_localpos = matrix.get_position(right_handpose)
+        return_data["right_base_rotmat"] = right_base_rotmat
+        return_data["right_base_pos"] = right_base_pos
+        return_data["right_handpose"] = right_handpose
+        return_data["right_hand_pose"] = matrix.matrix_to_axis_angle(matrix.get_rotation(right_handpose)).flatten(-2)
+        return_data["right_hand_localpos"] = righthand_localpos
+        handpose_tip = get_handpose(humanoid_localmat, is_right=True, istip=True)
+        handtip_localpos = matrix.get_position(handpose_tip)
+        return_data["right_handtip_localpos"] = handtip_localpos
+
+        obj_transl = matrix.get_position(data["obj_globalmat"][:, 0])
+        obj_global_orient = matrix.matrix_to_axis_angle(matrix.get_rotation(data["obj_globalmat"][:, 0]))
+        return_data["obj_transl"] = obj_transl
+        return_data["obj_global_orient"] = obj_global_orient
+
+        return_data["humanoid"] = data["humanoid_globalmat"]
+        return_data["obj"] = data["obj_globalmat"]
+        return_data["contact"] = data["contact"]
+
+        return_data["scale"] = data["scale"].reshape(1)
+        return_data["center"] = data["center"]
+        return_data["global_obj_center"] = matrix.get_position_from(data["center"][None], data["obj_globalmat"][:, 0]) # (N, 3)
+
+        vid = self.idx2meta[idx]
+        return_data["caption"] = data["caption"]
+        return return_data
+
+    def inv_transform(self, data):
+        return data * self.std + self.mean
+
+    def __len__(self):
+        return len(self.idx2meta)
+
+    def __getitem__(self, item):
+        idx = item
+        data = self._load_data(idx)
+        processed_data = self._process_data(data, idx)
+
+        human_motion = processed_data["gt_global_pos"]
+        obj_motion = processed_data["global_obj_center"]
+        obj_rot = matrix.matrix_to_rotation_6d(matrix.get_rotation(processed_data["obj"]))
+        obj_center_mat = matrix.get_TRS(matrix.get_rotation(processed_data["obj"])[..., 0, :, :], obj_motion)
         obj_name = self.idx2meta[idx].split("_")[1]
         m_length = processed_data["length"]
         text = processed_data["caption"]
 
         obj_invhumanmotion = matrix.get_relative_position_to(human_motion, obj_center_mat)
-        motion = torch.cat([human_motion.flatten(-2), obj_invhumanmotion.flatten(-2)], dim=-1)
+        motion = torch.cat([human_motion.flatten(-2), obj_invhumanmotion.flatten(-2), obj_motion], dim=-1)
         motion = motion.numpy()
 
         m_length = min(m_length, self.max_motion_length)

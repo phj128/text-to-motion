@@ -1397,6 +1397,27 @@ class Text2MotionDatasetV5(data.Dataset):
             motion_intent = motion_intent.item()
             caption = f"The person {plural_dict[motion_intent]} the {obj_name}."
 
+            seq_contact = []
+            for k in [
+                "L_Index3",
+                "L_Middle3",
+                "L_Pinky3",
+                "L_Ring3",
+                "L_Thumb3",
+                "R_Index3",
+                "R_Middle3",
+                "R_Pinky3",
+                "R_Ring3",
+                "R_Thumb3",
+            ]:
+                c = contact[k].clone()
+                seq_contact.append(c)
+            seq_contact = torch.stack(seq_contact, dim=-1)  # (N, 10)
+            seq_contact = torch.any(seq_contact, dim=-1)  # (N,)
+            last_true_index = torch.argmax(torch.flip(seq_contact.float(), dims=[0]))
+            last_true_index = seq_contact.shape[0] - 1 - last_true_index
+            seq_length = last_true_index
+
             self.motion_files[vid_name] = {
                 "humanoid_localmat": humanoid_localmat,
                 "humanoid_globalmat": humanoid_globalmat,
@@ -1405,9 +1426,10 @@ class Text2MotionDatasetV5(data.Dataset):
                 "contact": contact,
                 "beta": beta,
                 "caption": caption,
+                "seq_length": seq_length,
             }
             # print(f"seq {vid_name} length: {humanoid_localmat.shape[0]}")
-            max_length = max(max_length, humanoid_localmat.shape[0])
+            max_length = max(max_length, seq_length)
         print(f"max_length: {max_length}")
         self.idx2meta = []
         for k, v in self.motion_files.items():
@@ -1424,10 +1446,10 @@ class Text2MotionDatasetV5(data.Dataset):
         obj_localmat = self.motion_files[vid]["obj_localmat"]
         obj_globalmat = self.motion_files[vid]["obj_globalmat"]
         caption = self.motion_files[vid]["caption"]
-
+        seq_length = self.motion_files[vid]["seq_length"]
         start_id = 0
 
-        raw_len = humanoid_globalmat.shape[0] - start_id
+        raw_len = seq_length - start_id
         # Get {tgt_len} frames from data
         # Random select a subset with speed augmentation  [start, end)
         tgt_len = 300
@@ -1500,7 +1522,7 @@ class Text2MotionDatasetV5(data.Dataset):
             "obj_globalmat": obj_globalmat,
             "contact": seq_contact,
             "beta": seq_beta,
-            "length": select_length,
+            "length": torch.tensor(select_length, dtype=torch.int32),
             "caption": caption,
         }
 
